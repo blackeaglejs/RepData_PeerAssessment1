@@ -76,3 +76,20 @@ hist(activity_data_replaced_by_day$step_sum,
 ## Get the mean and median.
 activity_data_repl_mean <- mean(activity_data_replaced_by_day$step_sum, na.rm=TRUE)
 activity_data_repl_median <- median(activity_data_replaced_by_day$step_sum, na.rm=TRUE)
+
+activity_data_replaced$day <- weekdays(activity_data_replaced$date)
+
+activity_data_replaced$day_type <- "weekday"
+activity_data_replaced$day_type[activity_data_replaced$day %in% c("Saturday", "Sunday")] <- "weekend"
+
+average_steps_per_day <- activity_data_replaced %>%
+      group_by(interval,day) %>%
+      summarize(avg_steps=mean(steps), na.rm=TRUE)
+
+library(ggplot2)
+qplot(interval, avg_steps, data=average_steps_per_day,
+      type ='l',
+      geom="line",
+      xlab="Interval",
+      ylab="Number of steps(Average)",
+      facets = daytype ~ .)
