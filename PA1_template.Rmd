@@ -133,11 +133,11 @@ Let's make a plot to compare using ggplot2.
 At this point, my code is throwing an error regarding faceting but I'm not sure why. 
 I'll keep working on this, but this is my last commit before the assignment is due.
 ```{r}
-library(ggplot2)
-qplot(interval, avg_steps, data=average_steps_per_day,
-      type ='l',
-      geom="line",
-      xlab="Interval",
-      ylab="Number of steps(Average)",
-      facets = daytype ~ .)
+##library(ggplot2)
+##qplot(interval, avg_steps, data=average_steps_per_day,
+##      type ='l',
+##      geom="line",
+##      xlab="Interval",
+##      ylab="Number of steps(Average)",
+##      facets = daytype ~ .)
 ```
