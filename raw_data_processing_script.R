@@ -20,7 +20,19 @@ activity_data$date <- as.Date(activity_data$date)
 
 ## Create a histogram of steps by day. 
 steps_by_day <- tapply(activity_data$steps, activity_data$date, FUN=sum, na.rm=TRUE)
-hist(steps_by_day)
+hist(steps_by_day, main = "Steps per day", xlab = "Number of Steps", ylab= "Number of Days")
 
-## Calculate the means for each day. 
-tapply(activity_data$steps, activity_data$date, FUN=mean, na.rm=TRUE)
+## Calculate the mean and median steps per day. 
+mean(steps_by_day)
+median(steps_by_day)
+
+## Create a time series plot. 
+steps_by_interval <- tapply(activity_data$steps, activity_data$interval, FUN=mean, na.rm = TRUE)
+plot(steps_by_interval, 
+     type="l", 
+     main="Steps during each interval", 
+     xlab = "Interval", 
+     ylab = "Average steps taken")
+
+## Get the interval with the maximum.
+max_index <- activity_data$interval[which.max(steps_by_interval)]
