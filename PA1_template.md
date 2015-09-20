@@ -149,19 +149,20 @@ Calculate average weekday steps versus weekend steps.
 
 ```r
 average_steps_per_day <- activity_data_replaced %>%
-      group_by(interval,day) %>%
-      summarize(avg_steps=mean(steps), na.rm=TRUE)
+      group_by(day,interval) %>%
+      summarize(avg_steps=mean(steps))
 ```
 Let's make a plot to compare using ggplot2.
 
+At this point, my code is throwing an error regarding faceting but I'm not sure why. 
+I'll keep working on this, but this is my last commit before the assignment is due.
+
 ```r
-library(ggplot2)
-qplot(interval, avg_steps, data=average_steps_per_day,
-      type ='l')
+##library(ggplot2)
+##qplot(interval, avg_steps, data=average_steps_per_day,
+##      type ='l',
+##      geom="line",
+##      xlab="Interval",
+##      ylab="Number of steps(Average)",
+##      facets = daytype ~ .)
 ```
-
-```
-## Warning: Removed 1728 rows containing missing values (geom_point).
-```
-
-![](PA1_template_files/figure-html/unnamed-chunk-19-1.png) 
