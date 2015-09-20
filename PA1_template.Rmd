@@ -50,15 +50,67 @@ plot(steps_by_interval,
      xlab = "Interval", 
      ylab = "Average steps taken")
 ```
-
-```{r echo=FALSE}
+### Calculate the number of missing values in the data. 
+```{r}
 max_index <- activity_data$interval[which.max(steps_by_interval)]
 ```
 The interval with the maximum number of steps
 is `r max_index`.
 
 ## Imputing missing values
+``` {r}
+NA_values <- is.na(activity_data$steps)
+NA_count <- sum(NA_values)
+```
+There are `r NA_count` missing values in the dataset. 
 
+#### Replace the missing value with the mean for that interval. 
+I am going to use the dplyr package as other solutions are too cumbersome at this point.
+```{r}
+library(dplyr)
+```
+Group the data by interval. 
+```{r}
+activity_data_grouped <- activity_data %>%
+      group_by(interval) %>%
+      summarize(mean_steps_per_day=mean(steps))
+```
+Fill in the dataset.
+```{r}
+activity_data_replaced <- activity_data
+for (i in 1:nrow(activity_data_replaced)) {
+      if (is.na(activity_data_replaced$steps[i])) {
+            # Find the index value for when the interval matches the average
+            index_value <- which(activity_data_replaced$interval[i] == activity_data_grouped$interval)
+            # Assign the value to replace the NA
+            activity_data_replaced$steps[i] <- activity_data_grouped[index_value,]$mean_steps_per_day
+      }
+}
+```
+Make sure the date is still a date. 
+``` {r}
+activity_data_replaced$date <- as.Date(activity_data_replaced$date)
+```
 
+Plot a new histogram. 
+```{r}
+activity_data_replaced_by_day <- activity_data_replaced %>%
+      group_by(date) %>%
+      summarize(step_sum=sum(steps))
+
+hist(activity_data_replaced_by_day$step_sum, 
+     xlab = "Number of steps",
+     ylab = "Number of days",
+     main = "Steps per day")
+```
+Get the mean and median.
+````{r echo = FALSE}
+activity_data_repl_mean <- mean(activity_data_replaced_by_day$step_sum, na.rm=TRUE)
+activity_data_repl_median <- median(activity_data_replaced_by_day$step_sum, na.rm=TRUE)
+```
+
+The mean is `r activity_data_repl_mean` and the median is `r activity_data_repl_median`. 
+The mean and median appear to have shifted and become almost equal. The mean shift is likely the result of imputing a large number of values for the mean through dplyr. Dplyr may calculate means differently than the methods use previously. The median probably became close to equal to the mean because so many values for the mean were inserted into the data. 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+Make a new variable for the day of the week. 

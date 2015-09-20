@@ -36,3 +36,43 @@ plot(steps_by_interval,
 
 ## Get the interval with the maximum.
 max_index <- activity_data$interval[which.max(steps_by_interval)]
+
+## Calculate the number of NAs in the dataset.
+NA_values <- is.na(activity_data$steps)
+NA_count <- sum(NA_values)
+
+## Replace the missing value with the mean for that interval. 
+## I am going to use the dplyr package as other solutions are too cumbersome at this point.
+library(dplyr)
+
+activity_data_grouped <- activity_data %>%
+      group_by(interval) %>%
+      summarize(mean_steps_per_day=mean(steps))
+
+activity_data_replaced <- activity_data
+
+for (i in 1:nrow(activity_data_replaced)) {
+      if (is.na(activity_data_replaced$steps[i])) {
+            # Find the index value for when the interval matches the average
+            index_value <- which(activity_data_replaced$interval[i] == activity_data_grouped$interval)
+            # Assign the value to replace the NA
+            activity_data_replaced$steps[i] <- activity_data_grouped[index_value,]$mean_steps_per_day
+      }
+}
+
+## Make sure the date is still a date. 
+activity_data_replaced$date <- as.Date(activity_data_replaced$date)
+
+## Plot a new histogram. 
+activity_data_replaced_by_day <- activity_data_replaced %>%
+      group_by(date) %>%
+      summarize(step_sum=sum(steps))
+
+hist(activity_data_replaced_by_day$step_sum, 
+     xlab = "Number of steps",
+     ylab = "Number of days",
+     main = "Steps per day")
+
+## Get the mean and median.
+activity_data_repl_mean <- mean(activity_data_replaced_by_day$step_sum, na.rm=TRUE)
+activity_data_repl_median <- median(activity_data_replaced_by_day$step_sum, na.rm=TRUE)
